@@ -8,31 +8,32 @@ and display total count number on top-left region.
 The project separate the following components:
 - Object Detection API from tensorflow project
 - Tracker API from opencv 3.6
+
 <p align="center">
-  <img src="doc/img/img.jpg" width=713 height=411>
+  <img src="doc/img/img.png" width=713 height=411>
 </p>
 
 ## Table of contents
 Quick Start:
 
-    * <a href='object_detection_tutorial.ipynb'>
+    *  <a href='object_detection_tutorial.ipynb'>
       Quick Start: Jupyter notebook for car inference</a><br>
 
 Setup:
 
-    * <a href='doc/installation.md'>Installation</a><br>
+    *  <a href='doc/installation.md'>Installation</a><br>
 
 How to:
 
-    * <a href='doc/labelimg.md'>Label custom images</a><br>
-    * <a href='doc/transfer_video_to_images.md'>Transfer video to images</a><br>
-    * <a href='doc/xml_to_csv.md'>Convert xml to csv file</a><br>
-    * <a href='doc/generate_tfrecord.md'>Generate TF Record</a><br>
-    * <a href='doc/train.md'>Train model</a><br>
-    * <a href='doc/export_inference_graph.md'>Export inference graph</a><br>
+    *  <a href='doc/labelimg.md'>Label custom images</a><br>
+    *  <a href='doc/transfer_video_to_images.md'>Transfer video to images</a><br>
+    *  <a href='doc/xml_to_csv.md'>Convert xml to csv file</a><br>
+    *  <a href='doc/generate_tfrecord.md'>Generate TF Record</a><br>
+    *  <a href='doc/train.md'>Train model</a><br>
+    *  <a href='doc/export_inference_graph.md'>Export inference graph</a><br>
 
 Running:
 
-    * <a href='doc/car_detection_for_video.md'>
+    *  <a href='doc/car_detection_for_video.md'>
         Running the code of car detection, tracking, and counting for surveillance video.</a><br>
 
