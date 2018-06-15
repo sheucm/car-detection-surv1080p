@@ -16,24 +16,25 @@ The project separate the following components:
 ## Table of contents
 Quick Start:
 
-    *  <a href='object_detection_tutorial.ipynb'>
+    * <a href='object_detection_tutorial.ipynb'>
       Quick Start: Jupyter notebook for car inference</a><br>
 
 Setup:
 
-    *  <a href='doc/installation.md'>Installation</a><br>
+    * <a href='doc/installation.md'>Installation</a><br>
 
 How to:
 
-    *  <a href='doc/labelimg.md'>Label custom images</a><br>
-    *  <a href='doc/transfer_video_to_images.md'>Transfer video to images</a><br>
-    *  <a href='doc/xml_to_csv.md'>Convert xml to csv file</a><br>
-    *  <a href='doc/generate_tfrecord.md'>Generate TF Record</a><br>
-    *  <a href='doc/train.md'>Train model</a><br>
-    *  <a href='doc/export_inference_graph.md'>Export inference graph</a><br>
+    * [Label custom images](doc/labelimg.md)
+    * <a href='doc/labelimg.md'>Label custom images</a><br>
+    * <a href='doc/transfer_video_to_images.md'>Transfer video to images</a><br>
+    * <a href='doc/xml_to_csv.md'>Convert xml to csv file</a><br>
+    * <a href='doc/generate_tfrecord.md'>Generate TF Record</a><br>
+    * <a href='doc/train.md'>Train model</a><br>
+    * <a href='doc/export_inference_graph.md'>Export inference graph</a><br>
 
 Running:
 
-    *  <a href='doc/car_detection_for_video.md'>
+    * <a href='doc/car_detection_for_video.md'>
         Running the code of car detection, tracking, and counting for surveillance video.</a><br>
 
