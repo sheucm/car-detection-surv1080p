@@ -42,5 +42,5 @@ Running:
 
 ## Maintainers
 
-* Jonathan Huang, github: [jch1](https://github.com/jch1)
+* Jonathan Huang, github: [jch1](doc/labelimg.md)
 * Vivek Rathod, github: [tombstone](https://github.com/tombstone)
