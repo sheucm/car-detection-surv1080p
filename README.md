@@ -25,13 +25,13 @@ Setup:
 
 How to:
 
-    * [Label custom images](doc/labelimg.md)
-    * <a href='doc/labelimg.md'>Label custom images</a><br>
-    * <a href='doc/transfer_video_to_images.md'>Transfer video to images</a><br>
-    * <a href='doc/xml_to_csv.md'>Convert xml to csv file</a><br>
-    * <a href='doc/generate_tfrecord.md'>Generate TF Record</a><br>
-    * <a href='doc/train.md'>Train model</a><br>
-    * <a href='doc/export_inference_graph.md'>Export inference graph</a><br>
+* [Label custom images](doc/labelimg.md)
+* <a href='doc/labelimg.md'>Label custom images</a><br>
+* <a href='doc/transfer_video_to_images.md'>Transfer video to images</a><br>
+* <a href='doc/xml_to_csv.md'>Convert xml to csv file</a><br>
+* <a href='doc/generate_tfrecord.md'>Generate TF Record</a><br>
+* <a href='doc/train.md'>Train model</a><br>
+* <a href='doc/export_inference_graph.md'>Export inference graph</a><br>
 
 
 Running:
@@ -42,5 +42,5 @@ Running:
 
 ## Maintainers
 
-* Jonathan Huang, github: [jch1](doc/labelimg.md)
+* [Jonathan Huang, github: jch1](doc/labelimg.md)
 * Vivek Rathod, github: [tombstone](https://github.com/tombstone)
