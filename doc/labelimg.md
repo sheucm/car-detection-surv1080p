@@ -3,8 +3,7 @@
 
 ## Download
 
-Download labelimg tool from github project:
-https://github.com/tzutalin/labelImg. <br>
+Download [labelimg tool](https://github.com/tzutalin/labelImg).
 
 <p align="center">
   <img src="doc/img/labelimg.jpg" width=799 height=401>
