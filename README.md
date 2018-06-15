@@ -34,6 +34,7 @@ How to:
 * <a href='doc/transfer_video_to_images.md'>Transfer video to images</a><br>
 * <a href='doc/xml_to_csv.md'>Convert xml to csv file</a><br>
 * <a href='doc/generate_tfrecord.md'>Generate TF Record</a><br>
+* <a href='doc/config_setting.md'>Set config</a><br>
 * <a href='doc/train.md'>Train model</a><br>
 * <a href='doc/export_inference_graph.md'>Export inference graph</a><br>
 
