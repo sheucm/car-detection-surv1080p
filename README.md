@@ -33,8 +33,14 @@ How to:
     * <a href='doc/train.md'>Train model</a><br>
     * <a href='doc/export_inference_graph.md'>Export inference graph</a><br>
 
+
 Running:
 
     * <a href='doc/car_detection_for_video.md'>
         Running the code of car detection, tracking, and counting for surveillance video.</a><br>
 
+
+## Maintainers
+
+* Jonathan Huang, github: [jch1](https://github.com/jch1)
+* Vivek Rathod, github: [tombstone](https://github.com/tombstone)
