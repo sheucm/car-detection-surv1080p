@@ -49,6 +49,7 @@ from object_detection.utils import label_map_util
 #from object_detection.utils import visualization_utils as vis_util
 from visualization_utils import visualize_boxes_and_labels_on_image_array
 from tracker import TrackerHandler
+from counter import Counter
 
 # # Model preparation 
 
@@ -168,6 +169,7 @@ out = cv2.VideoWriter('car_detection.avi',fourcc, 20.0, (1280,720))
 cap = cv2.VideoCapture('test_video/video1080p.mp4')
 
 tracker_handler = TrackerHandler()
+counter = Counter()
 while (cap.isOpened()):
   ret, image_np = cap.read()
   if ret == False:
@@ -186,12 +188,13 @@ while (cap.isOpened()):
       output_dict['detection_scores'],
       category_index,
       tracker_handler = tracker_handler,
+      counter = counter,
       instance_masks=output_dict.get('detection_masks'),
       use_normalized_coordinates=True,
       line_thickness=8,
       skip_scores = True)
 
-  #out.write(image_np)
+  out.write(image_np)
 
   cv2.imshow('Car Detection', image_np)
   if cv2.waitKey(25) & 0xFF == ord('q'):

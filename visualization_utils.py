@@ -1,4 +1,10 @@
+import numpy as np
 import collections
+
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
+
 from object_detection.utils.visualization_utils import STANDARD_COLORS
 from object_detection.utils.visualization_utils import draw_bounding_box_on_image_array
 
@@ -9,6 +15,7 @@ def visualize_boxes_and_labels_on_image_array(
     scores,
     category_index,
     tracker_handler,
+    counter = None,
     instance_masks=None,
     instance_boundaries=None,
     keypoints=None,
@@ -115,6 +122,10 @@ def visualize_boxes_and_labels_on_image_array(
     draw_tracker_boxes(image, tracker_box_to_id_map, line_thickness, use_normalized_coordinates)
     draw_boxes(image, box_to_color_map, box_to_display_str_map, line_thickness, use_normalized_coordinates)
 
+    if counter != None:
+        id_list += [tracker_box_to_id_map[box] for box in tracker_box_to_id_map]
+        text = "Count: " + str(counter.update(id_list))
+        draw_text(image, text=text, xy=(50,30), font_size=40)
 
     return image
 
@@ -151,4 +162,15 @@ def draw_tracker_boxes (image, box_to_id_map, line_thickness, use_normalized_coo
             thickness=line_thickness,
             display_str_list= ['car: '+id],
             use_normalized_coordinates=use_normalized_coordinates)
+    return image
+
+def draw_text (image, text, xy=(0,0), color=(0,0,255), font_size=16):
+    image_pil = Image.fromarray(np.uint8(image)).convert('RGB')
+    draw = ImageDraw.Draw(image_pil)
+
+    font = ImageFont.truetype("abel/abel-regular.ttf", font_size)
+    draw.text(xy, text, color, font=font)
+
+    np.copyto(image, np.array(image_pil))
+
     return image
