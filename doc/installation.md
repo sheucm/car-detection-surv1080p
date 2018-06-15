@@ -30,6 +30,8 @@ Tensorflow using one of the following commands:
 pip install tensorflow
 # For GPU
 pip install tensorflow-gpu
+```
+
 
 Install dependencies using pip:
 

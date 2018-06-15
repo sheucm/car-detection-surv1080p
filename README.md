@@ -9,14 +9,19 @@ The project separate the following components:
 - Object Detection API from tensorflow project
 - Tracker API from opencv 3.6
 
+
 <p align="center">
   <img src="doc/img/img.png" width=713 height=411>
 </p>
 
+
+[Video of this project.](https://www.youtube.com/watch?v=2yF5Bz_R6DI&feature=youtu.be)
+
+
 ## Table of contents
 Quick Start:
 
-* <a href='object_detection_tutorial.ipynb'>
+* <a href='car_detection.ipynb'>
   Quick Start: Jupyter notebook for car inference</a><br>
 
 Setup:

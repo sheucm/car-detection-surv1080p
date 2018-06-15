@@ -1,7 +1,7 @@
 # How to convert xml to csv file
 
 Put your images and corresponding xml files to
-images/train and images/test directories.
+`images/train` and `images/test` directories.
 
 And execute the xml_to_csv.py.
 
