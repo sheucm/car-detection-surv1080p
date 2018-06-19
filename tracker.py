@@ -10,10 +10,16 @@ class TrackerHandler (object):
             self.box = box
             self.id = id
 
-    def __init__ (self, iou_threshold=0.4, tracker_life_if_no_use=5, max_num_of_id=15):
+    def __init__ (self, iou_threshold=0.4,
+                        iou_threshold_of_tracker=0.6,
+                        tracker_life_if_no_use=5,
+                        max_num_of_id=15):
         '''
                     :param iou_threshold: a float number between 0.0 and 1.0.
                                 The iou_threshold is a threshold of intersection over union.
+                    :param iou_threshold_of_tracker: a float number between 0.0 and 1.0.
+                                The iou_threshold_of_tracker is a threshold of intersection over union
+                                that reassigned a new tracker when less than the threshold..
                     :param tracker_life_if_no_use: an unsigned integer
                                 The tracker_life_if_no_use is a life times which tracker stay along when it's no used.
                     :param max_num_of_id: an unsigned integer
@@ -24,7 +30,9 @@ class TrackerHandler (object):
         self.pred_boxes = dict()
         self.tm = TrackerManager()
         self.trackerId_to_times_map = dict()
+
         self.IOU_THRESHOLD = iou_threshold
+        self.IOU_THRESHOLD_OF_TRAKCER = iou_threshold_of_tracker
         self.TRACKER_LIFE_IF_NO_USE = tracker_life_if_no_use
         self.MAX_NUM_OF_ID = max_num_of_id
 
@@ -118,7 +126,7 @@ class TrackerHandler (object):
                     if car.id not in id_list:
                         id_list.append(car.id)
                         box = self._prepare_box_for_track(car.box, frame.shape[1], frame.shape[0])
-                        self.tm.add(cv2.TrackerMedianFlow_create(), frame, box, car.id)
+                        self.tm.add(cv2.TrackerCSRT_create(), frame, box, car.id)
                         break
 
         self.update_pre_cars()
@@ -195,11 +203,11 @@ class TrackerHandler (object):
                 car = [car for car in self.cars if car.id == id]
                 if len(car) == 1:
                     car = car[0]
-                    if self.iou(box, car.box) < self.IOU_THRESHOLD:
+                    if self.iou(box, car.box) < self.IOU_THRESHOLD_OF_TRAKCER:
                         delete_id.append(id)
                         self.tm.detele(id)
                         box = self._prepare_box_for_track(car.box, frame.shape[1], frame.shape[0])
-                        self.tm.add(cv2.TrackerMedianFlow_create(), frame, box, id)
+                        self.tm.add(cv2.TrackerCSRT_create(), frame, box, id)
                         new_pred_boxes[id] = (True, car.box)
                 elif len(car) > 1:
                     print ("Error: duplicated id")
