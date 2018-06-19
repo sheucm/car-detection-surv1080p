@@ -114,16 +114,21 @@ def visualize_boxes_and_labels_on_image_array(
     for box in box_to_display_str_map:
         box_to_display_str_map[box][0] += ': ' + box_to_id_map[box]
 
-    id_list = [box_to_id_map[box] for box in box_to_id_map]
-    delete_tracker_boxes = [box for box in tracker_box_to_id_map if tracker_box_to_id_map[box] in id_list]
-    for box in delete_tracker_boxes:
-        del tracker_box_to_id_map[box]
+    if False: # Hide trackers if boxes exist
+        id_list = [box_to_id_map[box] for box in box_to_id_map]
+        delete_tracker_boxes = [box for box in tracker_box_to_id_map if tracker_box_to_id_map[box] in id_list]
+        for box in delete_tracker_boxes:
+            del tracker_box_to_id_map[box]
+        draw_tracker_boxes(image, tracker_box_to_id_map, line_thickness, use_normalized_coordinates, color='Chartreuse')
+    else:
+        draw_tracker_boxes(image, tracker_box_to_id_map, line_thickness, use_normalized_coordinates, color='Pink')
 
-    draw_tracker_boxes(image, tracker_box_to_id_map, line_thickness, use_normalized_coordinates)
     draw_boxes(image, box_to_color_map, box_to_display_str_map, line_thickness, use_normalized_coordinates)
 
     if counter != None:
-        id_list += [tracker_box_to_id_map[box] for box in tracker_box_to_id_map]
+        id_list = [box_to_id_map[box] for box in box_to_id_map if box[2] < 0.95 ]
+        id_list += [tracker_box_to_id_map[box] for box in tracker_box_to_id_map if box[2] < 0.95]
+        #id_list += [tracker_box_to_id_map[box] for box in tracker_box_to_id_map]
         text = "Count: " + str(counter.update(id_list))
         draw_text(image, text=text, xy=(50,30), font_size=40)
 
@@ -147,7 +152,7 @@ def draw_boxes (image, box_to_color_map, box_to_display_str_map, line_thickness,
             use_normalized_coordinates=use_normalized_coordinates)
     return image
 
-def draw_tracker_boxes (image, box_to_id_map, line_thickness, use_normalized_coordinates):
+def draw_tracker_boxes (image, box_to_id_map, line_thickness, use_normalized_coordinates, color):
     # Draw all boxes onto image.
     for box, id in box_to_id_map.items():
         ymin, xmin, ymax, xmax = box
@@ -158,7 +163,7 @@ def draw_tracker_boxes (image, box_to_id_map, line_thickness, use_normalized_coo
             xmin,
             ymax,
             xmax,
-            color='Chartreuse',
+            color= color,#'Pink''Chartreuse',
             thickness=line_thickness,
             display_str_list= ['car: '+id],
             use_normalized_coordinates=use_normalized_coordinates)
