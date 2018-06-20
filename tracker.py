@@ -5,7 +5,7 @@ from object_detection.utils.visualization_utils import draw_bounding_box_on_imag
 
 class TrackerHandler (object):
 
-    class _Car(object):
+    class __Car(object):
         def __init__(self, box, id=None):
             self.box = box
             self.id = id
@@ -45,7 +45,7 @@ class TrackerHandler (object):
                                 box_to_id_map is a dictionary of key of box and value of id of string type.
                                 tracker_box_to_id_map is a dictionary of key of box and value of id of string type.
                     '''
-        self.cars = self.generate_cars(boxes_list)
+        self.cars = self.__generate_cars(boxes_list)
         # self.cars now have bounding box but no id.
         # Following codes will specified unique id for each car.
 
@@ -80,17 +80,16 @@ class TrackerHandler (object):
         #   1. We take predicted boxes from tracker
         #   2. We filter the predicted boxes from eliminating the its id
         #       which is in id_list.
-        pred_boxes = None
+        id_to_predbox_map = None
         if len(self.tm.trackers) > 0:
             pred_boxes = self.tm.update(frame)
-            pred_boxes = self._transfer_predicted_boxes(pred_boxes, frame.shape[1], frame.shape[0])
-            pred_boxes = self.refine_tm_and_pred_boxes(pred_boxes, frame)
-            miss_ids = [id for id in pred_boxes.keys() if id not in id_list]
+            id_to_predbox_map = self.__transfer_predicted_boxes_and_refine_tm(pred_boxes, frame)
+            miss_ids = [id for id in id_to_predbox_map.keys() if id not in id_list]
             # Case 1: iou (pre_car.box, car.box) > IOU_THRESHOLD
             #   We predict its id by using predicted box
             #   if iou (predict_box, car.box) > IOU_THRESHOLD.
             for id in miss_ids:
-                ok, box = pred_boxes[id]
+                box = id_to_predbox_map[id]
                 for car in self.cars:
                     if self.iou(car.box, box) > self.IOU_THRESHOLD:
                         car.id = id
@@ -112,10 +111,8 @@ class TrackerHandler (object):
 
             # trackerId_to_times_map is used to record the ids with times
             #   which the times mean the number of missed detection.
-            self.update_trackerId_to_times_map (miss_ids)
-
             # If the tracker miss over certain times, we will delete the tracker from tm.
-            self.update_tm_from_trackerId_to_times_map()
+            self.__update_tm_and_trackerId_to_times_map (miss_ids)
 
         # Step 3:
         #   New id for new detected car, and add it to tracker for prediction.
@@ -125,23 +122,23 @@ class TrackerHandler (object):
                     car.id = random.randint (0, self.MAX_NUM_OF_ID)
                     if car.id not in id_list:
                         id_list.append(car.id)
-                        box = self._prepare_box_for_track(car.box, frame.shape[1], frame.shape[0])
-                        self.tm.add(cv2.TrackerCSRT_create(), frame, box, car.id)
+                        box = self.__prepare_box_for_track(car.box, frame.shape[1], frame.shape[0])
+                        self.__add_tracker_to_tm("MedianFlow", frame, box, car.id)
                         break
 
-        self.update_pre_cars()
+        self.__update_pre_cars()
 
         box_to_id_map = dict()
         for car in self.cars:
             box_to_id_map[car.box] = str(car.id)
 
         tracker_box_to_id_map = dict()
-        if pred_boxes != None:
-            for id in pred_boxes:
-                ok, box = pred_boxes[id]
+        if id_to_predbox_map != None and len(id_to_predbox_map)>0:
+            for id, box in id_to_predbox_map.items():
                 tracker_box_to_id_map[box] = str(id)
 
         return box_to_id_map, tracker_box_to_id_map
+
 
     def iou (self, bb1, bb2):
         '''
@@ -166,20 +163,20 @@ class TrackerHandler (object):
         union = region1 + region2 - intersection_region
         return intersection_region * 1.0 / union
 
-    def generate_cars (self, boxes_list):
+    def __generate_cars (self, boxes_list):
         '''
                 :param boxes_list: a list of boxes
                 :return: a list of Car class
                 '''
         cars = list()
         for box in boxes_list:
-            cars.append (self._Car(box))
+            cars.append (self.__Car(box))
         return cars
 
-    def update_pre_cars (self):
+    def __update_pre_cars (self):
         self.pre_cars = self.cars
 
-    def refine_tm_and_pred_boxes (self, pred_boxes, frame):
+    def __transfer_predicted_boxes_and_refine_tm (self, pred_boxes, frame):
         '''
                     :param pred_boxes: a dictionary of key of integer id and value of a tuple of Boolean ok and  tuple box.
                     :param frame: np_array of image
@@ -187,9 +184,13 @@ class TrackerHandler (object):
                                 This dictionary mean refined pred_boxes.
                     '''
         delete_id = list()
-        new_pred_boxes = dict()
+        id_to_box_map = dict()
+        new_id_to_box_map = dict()
         for id in pred_boxes:
             ok, box = pred_boxes[id]
+            box = self.__prepare_box_for_tensorflow(box, frame.shape[1], frame.shape[0])
+            id_to_box_map[id] = box
+
             if not ok:
                 delete_id.append(id)
                 self.tm.detele(id)
@@ -206,25 +207,30 @@ class TrackerHandler (object):
                     if self.iou(box, car.box) < self.IOU_THRESHOLD_OF_TRAKCER:
                         delete_id.append(id)
                         self.tm.detele(id)
-                        box = self._prepare_box_for_track(car.box, frame.shape[1], frame.shape[0])
-                        self.tm.add(cv2.TrackerCSRT_create(), frame, box, id)
-                        new_pred_boxes[id] = (True, car.box)
+                        self.__add_tracker_to_tm(tracker_name = "MedianFlow",
+                                                frame = frame,
+                                                box = self.__prepare_box_for_track(car.box,
+                                                                                  frame.shape[1],
+                                                                                  frame.shape[0]),
+                                                id = id)
+                        new_id_to_box_map[id] = car.box
                 elif len(car) > 1:
                     print ("Error: duplicated id")
 
         for id in delete_id:
-            del pred_boxes[id]
-        return {**pred_boxes, **new_pred_boxes}
+            del id_to_box_map[id]
+        return {**id_to_box_map, **new_id_to_box_map}
 
-    def update_trackerId_to_times_map (self, miss_ids):
+    def __update_tm_and_trackerId_to_times_map (self, miss_ids):
         '''
-                    :param miss_ids: a list of integer
-                    '''
-        # Delete item that is not in miss_ids
-        delete_ids = [id for id in self.trackerId_to_times_map \
-                      if id not in miss_ids]
-        for id in delete_ids:
-            del self.trackerId_to_times_map[id]
+                            :param miss_ids: a list of integer
+                '''
+        tracker_ids = list (self.trackerId_to_times_map.keys())
+        for id in tracker_ids:
+            if id not in miss_ids:
+                del self.trackerId_to_times_map[id]
+            elif self.trackerId_to_times_map[id] > self.TRACKER_LIFE_IF_NO_USE:
+                self.tm.detele(id)
 
         # Add or increase to tracker_id_map_to_no_detected_car
         for id in miss_ids:
@@ -233,13 +239,7 @@ class TrackerHandler (object):
             else:
                 self.trackerId_to_times_map[id] += 1
 
-    def update_tm_from_trackerId_to_times_map (self):
-        delete_ids = [id for id in self.trackerId_to_times_map \
-                      if self.trackerId_to_times_map[id] > self.TRACKER_LIFE_IF_NO_USE]
-        for id in delete_ids:
-            self.tm.detele(id)
-
-    def _prepare_box_for_track (self, box, width, height):
+    def __prepare_box_for_track (self, box, width, height):
         '''
                     Transfer input box (normalized) to output box (unnormalized)
                     input box: (ymin, xmin, ymax, xman)
@@ -271,20 +271,19 @@ class TrackerHandler (object):
                 (box[1] + box[3]) * 1.0 / height,
                 (box[0] + box[2]) * 1.0 / width)
 
-    def _transfer_predicted_boxes (self, pred_boxes, width, height):
+
+    def __add_tracker_to_tm (self, tracker_name, frame, box, id):
         '''
-                :param pred_boxes:  a dictionary of key of integer id and value of a tuple of Boolean ok and  tuple box.
-                :param width: unsigned integer
-                                        It means image width.
-                :param height: unsigned integer
-                                        It means image height.
-                :return: a dictionary of key of integer id and value of a tuple of Boolean ok and  tuple box.
+                Add a tracker to tm by passing a tacker name.
+                :param tracker_name: a string of "CSRT" or "MedianFlow"
+                :param frame: np_array of an image
+                :param box: a tuple of four float numbers between 0 and 1
+                :param id: an unsigned integer
                 '''
-        for id in pred_boxes:
-            ok, box = pred_boxes[id]
-            box = self.__prepare_box_for_tensorflow(box, width, height)
-            pred_boxes[id] = (ok, box)
-        return pred_boxes
+        if tracker_name == "CSRT":
+            self.tm.add(cv2.TrackerCSRT_create(), frame, box, id)
+        elif tracker_name == "MedianFlow":
+            self.tm.add(cv2.TrackerMedianFlow_create(), frame, box, id)
 
 
 class TrackerManager (object):
