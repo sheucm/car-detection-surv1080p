@@ -26,7 +26,8 @@ def visualize_boxes_and_labels_on_image_array(
     line_thickness=4,
     groundtruth_box_visualization_color='black',
     skip_scores=False,
-    skip_labels=False):
+    skip_labels=False,
+    hide_tracker_boxes=True):
     """Overlay labeled boxes on an image with formatted scores and label names.
 
     This function groups boxes that correspond to the same location
@@ -111,25 +112,37 @@ def visualize_boxes_and_labels_on_image_array(
     boxes_list = [box for box in box_to_display_str_map]
     box_to_id_map, tracker_box_to_id_map = tracker_handler.track(boxes_list, image)
 
-    for box in box_to_display_str_map:
+    id_list = list()
+    id_list_for_count = list()
+    for box in box_to_id_map:
         box_to_display_str_map[box][0] += ': ' + box_to_id_map[box]
 
-    if False: # Hide trackers if boxes exist
-        id_list = [box_to_id_map[box] for box in box_to_id_map]
-        delete_tracker_boxes = [box for box in tracker_box_to_id_map if tracker_box_to_id_map[box] in id_list]
-        for box in delete_tracker_boxes:
-            del tracker_box_to_id_map[box]
-        draw_tracker_boxes(image, tracker_box_to_id_map, line_thickness, use_normalized_coordinates, color='Chartreuse')
+        if hide_tracker_boxes:
+            id_list.append (box_to_id_map[box])
+        if counter != None:
+            if box[2] < 0.95:
+                id_list_for_count.append(box_to_id_map[box])
+
+    tracker_box_to_id_map_for_display = dict()
+    for box in tracker_box_to_id_map:
+        id = tracker_box_to_id_map[box]
+        if hide_tracker_boxes:
+            if id not in id_list:
+                tracker_box_to_id_map_for_display[box] = id
+        if counter != None:
+            if box[2] < 0.95:
+                id_list_for_count.append(id)
+
+
+    if hide_tracker_boxes: # Hide trackers if boxes exist
+        draw_tracker_boxes(image, tracker_box_to_id_map_for_display, line_thickness, use_normalized_coordinates, color='Chartreuse')
     else:
         draw_tracker_boxes(image, tracker_box_to_id_map, line_thickness, use_normalized_coordinates, color='Pink')
 
     draw_boxes(image, box_to_color_map, box_to_display_str_map, line_thickness, use_normalized_coordinates)
 
     if counter != None:
-        id_list = [box_to_id_map[box] for box in box_to_id_map if box[2] < 0.95 ]
-        id_list += [tracker_box_to_id_map[box] for box in tracker_box_to_id_map if box[2] < 0.95]
-        #id_list += [tracker_box_to_id_map[box] for box in tracker_box_to_id_map]
-        text = "Count: " + str(counter.update(id_list))
+        text = "Count: " + str(counter.update(id_list_for_count))
         draw_text(image, text=text, xy=(50,30), font_size=40)
 
     return image
@@ -177,5 +190,4 @@ def draw_text (image, text, xy=(0,0), color=(0,0,255), font_size=16):
     draw.text(xy, text, color, font=font)
 
     np.copyto(image, np.array(image_pil))
-
     return image
