@@ -1,8 +1,6 @@
 import cv2
 import random
 
-from object_detection.utils.visualization_utils import draw_bounding_box_on_image_array
-
 class TrackerHandler (object):
 
     class __Car(object):
@@ -138,7 +136,6 @@ class TrackerHandler (object):
                 tracker_box_to_id_map[box] = str(id)
 
         return box_to_id_map, tracker_box_to_id_map
-
 
     def iou (self, bb1, bb2):
         '''
